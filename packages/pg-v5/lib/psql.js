@@ -1,6 +1,5 @@
 'use strict'
 
-const co = require('co')
 const bastion = require('./bastion')
 const debug = require('./debug')
 const { once, EventEmitter } = require('events')
@@ -190,7 +189,7 @@ class Tunnel {
   }
 }
 
-function * exec (db, query) {
+async function exec (db, query) {
   let configs = bastion.getConfigs(db)
   const options = psqlQueryOptions(query, configs.dbEnv)
 
@@ -204,7 +203,7 @@ async function execFile (db, file) {
   return runWithTunnel(db, configs.dbTunnelConfig, options)
 }
 
-function * interactive (db) {
+async function interactive (db) {
   let name = db.attachment.name
   let prompt = `${db.attachment.app.name}::${name}%R%# `
   let configs = bastion.getConfigs(db)
@@ -215,7 +214,7 @@ function * interactive (db) {
 }
 
 module.exports = {
-  exec: co.wrap(exec),
-  execFile: execFile,
-  interactive: co.wrap(interactive)
+  exec,
+  execFile,
+  interactive,
 }
